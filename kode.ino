@@ -142,7 +142,7 @@ void skrivLCD(char* text) {
       lcd.noAutoscroll();
   }
 
-// skriver utfordringen på lcd & utforer noen spesielle utfordringer
+// skriver utfordringen på lcd & utfører noen spesielle utfordringer
 void visUtfordring() {
 	lcd.noAutoscroll();
     lcd.clear();
@@ -180,12 +180,10 @@ void visUtfordring() {
       if (forsteAvstand < andreAvstand) {
         lcd.clear();
         lcd.print("Forstemann vant!");
-        //faaPoeng(1, 1); lar brukeren klikke på knappen selv
       }
       else if (forsteAvstand > andreAvstand) {
         lcd.clear();
         lcd.print("Andremann vant!");
-        //faaPoeng(2, 1);
       }
 
     } else if (aktuellUtfordring == utfordringerLang[6]) {
@@ -293,51 +291,54 @@ long avstandsMaaler() {
   }
 }
 
+// Måler avstand av en spiller 2 ganger og viser hvor langdt spilleren bevegde seg
 int hinkeLengde(int onsketAvstand) {
-  lcd.noAutoscroll();
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Ga ");
-  lcd.print(onsketAvstand);
-  lcd.print(" cm unna");
+	 lcd.noAutoscroll();
+	 lcd.clear();
+	 lcd.setCursor(0, 0);
+	 lcd.print("Ga ");
+	 lcd.print(onsketAvstand);
+	 lcd.print(" cm unna");
 
-  delay(2000);
+	 delay(2000);
 
-  naverendeAvstand = avstandsMaaler();
+	 naverendeAvstand = avstandsMaaler();
 
-  while (naverendeAvstand != onsketAvstand) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Avstanden er:");
-    lcd.setCursor(0, 1);
-    lcd.print(naverendeAvstand);
-    lcd.print(" cm");
-    delay(1000);
-    naverendeAvstand = avstandsMaaler();
-  }
-  Serial.print("Dette er naverendeAvstand etter at den har blitt større enn onsketAvstand: ");
-  Serial.println(naverendeAvstand);
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Hink na!");
-  delay(2000);
+	 while (naverendeAvstand != onsketAvstand) {
+	  	lcd.clear();
+	  	lcd.setCursor(0, 0);
+	  	lcd.print("Avstanden er:");
+	  	lcd.setCursor(0, 1);
+	  	lcd.print(naverendeAvstand);
+	  	lcd.print(" cm");
+	  	delay(1000);
+		naverendeAvstand = avstandsMaaler();
+	}
+	// hvis "naverendeAvstand == onsketAvstanddet" så vil sensoren starte å måle på om 4 sekunder 
+	  Serial.print("Dette er naverendeAvstand etter at den har blitt større enn onsketAvstand: ");
+	  Serial.println(naverendeAvstand);
+	  lcd.clear();
+	  lcd.setCursor(0, 0);
+	  lcd.print("Hink na!");
+	  delay(2000);
 
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Maler om:");
-  for (int i = 4; i > 0; i--) {
-    lcd.setCursor(0, 1);
-    lcd.print(i);
-    lcd.print(" sek");
-    delay(700);
-  }
-  aktuellHinkeLengde = avstandsMaaler();
-
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Du hinket: ");
-  lcd.setCursor(0, 1);
-  lcd.print(onsketAvstand - aktuellHinkeLengde);
-  delay(3000);
-  return onsketAvstand - aktuellHinkeLengde;
+	  lcd.clear();
+	  lcd.setCursor(0, 0);
+	  lcd.print("Maler om:");
+	  for (int i = 4; i > 0; i--) {
+	    lcd.setCursor(0, 1);
+	    lcd.print(i);
+	    lcd.print(" sek");
+	    delay(700);
+	  }
+	  aktuellHinkeLengde = avstandsMaaler();
+	
+	// skriver ut på lcd skjermen hvor mye brukeren hinket
+	  lcd.clear();
+	  lcd.setCursor(0, 0);
+	  lcd.print("Du hinket: ");
+	  lcd.setCursor(0, 1);
+	  lcd.print(onsketAvstand - aktuellHinkeLengde);
+	  delay(3000);
+	  return onsketAvstand - aktuellHinkeLengde;
 }
