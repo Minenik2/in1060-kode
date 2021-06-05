@@ -1,3 +1,5 @@
+// Prøv koden på tinkercad her: https://www.tinkercad.com/things/iCPekyl5Yam-play-box-prototype
+// forklaring om hvordan denne prototypen fungerer: https://www.youtube.com/watch?v=_uLTn_RCxeY
 #include <LiquidCrystal.h>
 #include <Servo.h>
 
