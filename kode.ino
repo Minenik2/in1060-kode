@@ -9,7 +9,7 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 char *utfordringer[] = {"Gjett 20cm avstand", "Skyt"};
 char *utfordringerLang[] = {"Gjett 20cm avstand",
                                   "Hink lengre enn venstremann",
-                                  "Skyt eldste spiller på 10 meter",
+                                  "Skyt eldste spiller pa 10 meter",
                                   "Sta pa henda i 10sek",
                                   "Dobbelt poeng pa neste utfordring",
                                   "+1 poeng til venstremann ved feil pa neste utfordring",
@@ -33,9 +33,9 @@ int forsteAvstand;
 int andreAvstand;
 
 //# alt for å fikse poeng og motorer
-const int PLAYER1_BUTTON = A4;
-const int PLAYER2_BUTTON = A5;
-const int PLAYER3_BUTTON = A3;
+const int PLAYER1_BUTTON = A3;
+const int PLAYER2_BUTTON = A4;
+const int PLAYER3_BUTTON = A5;
 
 const int PLAYER1_SERVO_PIN = 6;
 const int PLAYER2_SERVO_PIN = 13;
@@ -76,11 +76,12 @@ void setup() {
   PLAYER4_SERVO.write(0);
   //
 
-  randomSeed(666);
+  //randomSeed(analogRead(0));
   Serial.begin(9600);
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);
   lcd.print("Velkommen!");
+  delay(500);
 }
 
 void loop() {
@@ -90,7 +91,7 @@ void loop() {
   }
   // autoscroll funksjon
   const char* str = " ";
-  lcd.setCursor(11, 0);
+  lcd.setCursor(15, 0);
   lcd.autoscroll();
   lcd.print(str[0]);
   delay(400);
@@ -117,12 +118,13 @@ int readButtonPress(int playerButton, int playerPoeng) {
         currentServo.write(37 * (i + 1));
       }
       delay(200);
-    }
+  }
   return playerPoeng;
 }
 
 // skriver noe i bunn av skjermen
 void skrivLCD(char* text) {
+  	lcd.noAutoscroll();
     lcd.setCursor(0, 1);
     lcd.print(text);
     delay(800);
@@ -135,7 +137,9 @@ void skrivLCD(char* text) {
         for (int i = 0; i < textLengde - 10; i++)
         {
           lcd.print(str2[i]);
-          checkPlayerPoeng();
+          if (checkPlayerPoeng()) {
+          	return;
+          }
           delay(400);
         }
       }
@@ -162,6 +166,7 @@ void visUtfordring() {
       klarteDetEllerIkke = avstandsGjetter(20);
       if (klarteDetEllerIkke == false) {
         skrivLCD("Et forsok til!");
+        delay(2000);
         avstandsGjetter(20);
       }
       skrivLCD("Velg ny utfordring!");
@@ -193,20 +198,42 @@ void visUtfordring() {
 }
 
 // sjekker om noen av spillerne klikket på knappen
-void checkPlayerPoeng() {
+boolean checkPlayerPoeng() {
     if (digitalRead(PLAYER1_BUTTON) != LOW) {
    player1poeng = readButtonPress(PLAYER1_BUTTON, player1poeng);
+   lcd.clear();
    skrivLCD("Spiller 1 fikk poeng!");
-  }
+      if (player1poeng > 5) {
+        // spilleren fikk over 5 poeng og har vunnet
+        lcd.clear();
+        skrivLCD("Spiller 1 har vunnet!");
+      }
+      return true;
+  } 
   if (digitalRead(PLAYER2_BUTTON) != LOW) {
     player2poeng = readButtonPress(PLAYER2_BUTTON, player2poeng);
+    lcd.clear();
     skrivLCD("Spiller 2 fikk poeng!");
-  }
+    if (player2poeng > 5) {
+        // spilleren fikk over 5 poeng og har vunnet
+        lcd.clear();
+        skrivLCD("Spiller 2 har vunnet!");
+      }
+      return true;
+  } 
   if (digitalRead(PLAYER3_BUTTON) != LOW) {
     player3poeng = readButtonPress(PLAYER3_BUTTON, player3poeng);
+    lcd.clear();
     skrivLCD("Spiller 3 fikk poeng!");
+    if (player3poeng > 5) {
+        // spilleren fikk over 5 poeng og har vunnet
+        lcd.clear();
+        skrivLCD("Spiller 3 har vunnet!");
+      }
+    return true;
   }
-  }
+  return false;
+}
 
 // måle avstand og sende tilbake true eller false om avstanden er lik gjetteMal
 boolean avstandsGjetter(long gjetteMal) {
